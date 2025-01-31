@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 
 type AnalogClockProps = {
   date?: Date;
+  pause?:boolean;
   clockFaceStyle?: ViewStyle;
   minuteHandStyle?: ViewStyle;
   secondsHandStyle?: ViewStyle;
