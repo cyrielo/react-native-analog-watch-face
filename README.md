@@ -1,4 +1,10 @@
+
+[![Component preview](https://i.imgur.com/ftY108r.png)](https://i.imgur.com/ftY108r.png)
+[![Component preview](https://i.imgur.com/oqyxfRc.png)](https://i.imgur.com/oqyxfRc.png)
+
+
 # AnalogClock React Native Component
+
 
 A highly customizable analog clock component for React Native. This component allows you to customize various aspects of the clock, including its hands, hour markers, background, and more.
 
@@ -25,9 +31,23 @@ const App = () => {
   return (
     <View>
       <AnalogClock
-        interval={1000}
+        backgroundImage={{ uri: 'https://i.pinimg.com/736x/f1/e6/8e/f1e68ef9e34b3f0c2dcde5dcffbf580b.jpg'}}
+        hourTextStyle={{
+          color: '#f9f9f9'
+        }}
+        date={new Date(2025,0,31,4,18,18)}
         showDate={true}
-        backgroundImage={'https://example.com/clock-face.jpg'}
+        dateStyle={{
+          backgroundColor: '#fff',
+          borderRadius: 5,
+        }}
+        dateTextStyle={{
+          fontWeight: 'bold'
+        }}
+        blurRadius={4}
+        hourHandStyle={{
+          backgroundColor: '#dcdcdc'
+        }}
       />
     </View>
   );
