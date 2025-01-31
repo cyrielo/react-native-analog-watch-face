@@ -78,7 +78,14 @@ function App(): React.JSX.Element {
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
           <AnalogClock
-
+            backgroundImage={{ uri: 'https://i.pinimg.com/736x/f1/e6/8e/f1e68ef9e34b3f0c2dcde5dcffbf580b.jpg'}}
+            hourTextStyle={{
+              color: '#f9f9f9'
+            }}
+            blurRadius={4}
+            hourHandStyle={{
+              backgroundColor: '#dcdcdc'
+            }}
             />
         </View>
       </ScrollView>
