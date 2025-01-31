@@ -1,6 +1,5 @@
 
-[![Component preview](https://i.imgur.com/ftY108r.png)](https://i.imgur.com/ftY108r.png)
-[![Component preview](https://i.imgur.com/oqyxfRc.png)](https://i.imgur.com/oqyxfRc.png)
+[![Component preview](https://i.imgur.com/ftY108r.png)](https://i.imgur.com/ftY108r.png)[![Component preview](https://i.imgur.com/oqyxfRc.png)](https://i.imgur.com/oqyxfRc.png)
 
 
 # AnalogClock React Native Component
