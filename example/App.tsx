@@ -82,6 +82,15 @@ function App(): React.JSX.Element {
             hourTextStyle={{
               color: '#f9f9f9'
             }}
+            date={new Date(2025,0,31,4,18,18)}
+            showDate={true}
+            dateStyle={{
+              backgroundColor: '#fff',
+              borderRadius: 5,
+            }}
+            dateTextStyle={{
+              fontWeight: 'bold'
+            }}
             blurRadius={4}
             hourHandStyle={{
               backgroundColor: '#dcdcdc'
