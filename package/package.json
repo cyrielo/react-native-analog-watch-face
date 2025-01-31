@@ -24,9 +24,9 @@
   "author": "Paul Cyril Ologho",
   "license": "MIT",
   "private": false,
-  "peerDependencies":{
-    "react": "^19.0.0",
-    "react-native": "^0.77.0"
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-native": "^0.69.3"
   },
   "devDependencies": {
     "@types/react": "^18.3.18",

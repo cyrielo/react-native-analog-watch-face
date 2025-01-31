@@ -1,6 +1,5 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ViewStyle, ImageBackground, TextStyle } from 'react-native';
-
+import { View, Text, StyleSheet, ViewStyle, ImageBackground, TextStyle, ImageSourcePropType } from 'react-native';
 type AnalogClockProps = {
   date?: Date;
   dateStyle?: ViewStyle;
@@ -9,7 +8,7 @@ type AnalogClockProps = {
   interval?: number;
   steps?: number;
   showDate?: boolean;
-  backgroundImage?: string;
+  backgroundImage?: ImageSourcePropType;
   blurRadius?: number;
   minutesLineStyle?: ViewStyle;
   hourMarkerComponent?: (hour: number) => ReactNode;
@@ -43,7 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   hourMarking: {
-    borderColor: 'red',
+    borderColor: 'grey',
     position: 'absolute',
     width: '100%',
     height: '100%',
@@ -123,6 +122,7 @@ const AnalogClock: React.FC<AnalogClockProps> = ({
   secondsHandStyle,
   centerDotStyle
 }) => {
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const selecteDate = (date) ? date : new Date();
   const [time, setTime] = useState(selecteDate);
   const intervalHandle = useRef<NodeJS.Timeout>();
@@ -149,8 +149,7 @@ const AnalogClock: React.FC<AnalogClockProps> = ({
   return (
     <View style={[styles.clockContainer, { width: clockFaceWidth }, clockContainerStyle]}>
       {/* Clock face */}
-      <ImageBackground blurRadius={blurRadius} borderRadius={imageRadius}
-        src={backgroundImage}>
+      <ImageBackground blurRadius={blurRadius} borderRadius={imageRadius} source={backgroundImage}>
         <View style={[styles.clockFace, clockFaceStyle]}>
 
           {Array.from({ length: 60 }).map((_, i) => (
@@ -179,7 +178,6 @@ const AnalogClock: React.FC<AnalogClockProps> = ({
                   <Text style={{
                     fontWeight: 500,
                     fontSize: 18,
-                    color: 'red',
                     ...hourTextStyle
                   }} >{index == 0 ? '12' : index}</Text>
                 )}
@@ -222,7 +220,7 @@ const AnalogClock: React.FC<AnalogClockProps> = ({
             }, dateStyle,]}>
               <Text style={[{
                 fontSize: clockFaceWidth * 0.07,
-              }, dateTextStyle]}>Mon, 4</Text>
+              }, dateTextStyle]}>{dayNames[time.getDay()]}, {time.getDate()}</Text>
             </View>
           )}
         </View>
