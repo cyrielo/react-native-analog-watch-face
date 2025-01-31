@@ -3,10 +3,24 @@
   "version": "1.0.0",
   "description": "A customizable Analog clock face component for React Native",
   "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rimraf dist && tsup src/index.tsx --dts",
+    "prepublishOnly": "yarn run build"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/cyrielo/react-native-analog-watch-face.git"
   },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react-native",
+    "clock-face",
+    "watch-face",
+    "analog-clock"
+  ],
   "author": "Paul Cyril Ologho",
   "license": "MIT",
   "private": false,

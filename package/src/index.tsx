@@ -23,8 +23,6 @@ type AnalogClockProps = {
   centerDotStyle?: ViewStyle;
 }
 
-export type ClockFace = '';
-
 const styles = StyleSheet.create({
   clockContainer: {
     backgroundColor: 'transparent',
