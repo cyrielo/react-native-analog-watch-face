@@ -1,22 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, ViewStyle, ImageBackground, TextStyle, ImageSourcePropType } from 'react-native';
 type AnalogClockProps = {
   date?: Date;
-  pause?:boolean;
+  dateStyle?: ViewStyle;
+  dateTextStyle?: TextStyle;
+  pause?: boolean;
+  interval?: number;
+  steps?: number;
+  showDate?: boolean;
+  backgroundImage?: ImageSourcePropType;
+  blurRadius?: number;
+  minutesLineStyle?: ViewStyle;
+  hourMarkerComponent?: (hour: number) => ReactNode;
+  hourTextStyle?: TextStyle;
   clockFaceStyle?: ViewStyle;
+  clockContainerStyle?: ViewStyle;
   minuteHandStyle?: ViewStyle;
   secondsHandStyle?: ViewStyle;
   hourHandStyle?: ViewStyle;
+  hourHandsContainerStyle?: ViewStyle;
   centerDotStyle?: ViewStyle;
 }
 
-export type ClockFace = '';
-
 const styles = StyleSheet.create({
   clockContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    paddingVertical: 2,
+    borderRadius: 45,
   },
   clockFace: {
     width: 200,
@@ -32,7 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   hourMarking: {
-    borderColor: 'pink',
+    borderColor: 'grey',
     position: 'absolute',
     width: '100%',
     height: '100%',
@@ -40,10 +50,10 @@ const styles = StyleSheet.create({
   },
   minutesLine: {
     width: 0.5,
-    height: 7,
+    height: 5,
     backgroundColor: 'grey',
     position: 'absolute',
-    bottom: 5,
+    bottom: 3,
   },
   hourDot: {
     width: 6,
@@ -55,6 +65,7 @@ const styles = StyleSheet.create({
   },
   hand: {
     position: 'absolute',
+    zIndex: 1,
     width: 4,
     height: '50%',
     backgroundColor: '#333',
@@ -81,100 +92,141 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     position: 'absolute',
     zIndex: 10,
+  },
+  dateStyle: {
+    margin: 'auto',
+    padding: 2,
+    borderRadius: 3,
+    borderWidth: 1,
   }
 });
 
 const AnalogClock: React.FC<AnalogClockProps> = ({
   date,
+  pause,
+  interval = 1000,
+  steps = 1000,
+  blurRadius = 0,
+  showDate = false,
+  hourHandsContainerStyle,
+  clockContainerStyle,
+  dateStyle,
+  dateTextStyle,
   clockFaceStyle,
+  minutesLineStyle,
+  backgroundImage,
+  hourTextStyle,
+  hourMarkerComponent,
   hourHandStyle,
   minuteHandStyle,
   secondsHandStyle,
   centerDotStyle
 }) => {
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const selecteDate = (date) ? date : new Date();
   const [time, setTime] = useState(selecteDate);
+  const intervalHandle = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTime((prevDate) => new Date(prevDate.getTime() + 1000));
-    }, 1000);
-
-    return () => clearInterval(intervalId); // Clean up on unmount
-  }, []);
+    if (!pause) {
+      intervalHandle.current = setInterval(() => {
+        setTime((prevDate) => new Date(prevDate.getTime() + steps));
+      }, interval);
+    }
+    return () => clearInterval(intervalHandle.current); // Clean up on unmount
+  }, [pause]);
 
   // Calculate angles for hour, minute, and second hands
   const secondsAngle = (time.getSeconds() / 60) * 360;
   const minutesAngle = (time.getMinutes() / 60) * 360 + (secondsAngle / 60);
   const hoursAngle = (time.getHours() % 12 / 12) * 360 + (minutesAngle / 12);
 
+  const imageRadius: number = (clockFaceStyle && typeof clockFaceStyle.borderRadius == 'number')
+    ? clockFaceStyle.borderRadius : styles.clockFace.borderRadius;
+  const clockFaceWidth: number = (clockFaceStyle?.width !== undefined && typeof clockFaceStyle?.width == 'number')
+    ? clockFaceStyle.width : styles.clockFace.width;
+
   return (
-    <View style={styles.clockContainer}>
+    <View style={[styles.clockContainer, { width: clockFaceWidth }, clockContainerStyle]}>
       {/* Clock face */}
-      <View style={[styles.clockFace, clockFaceStyle]}>
-        {Array.from({ length: 60 }).map((_, i) => (
-          <View
-            key={i}
-            style={[
-              styles.hourMarking,
-              { transform: [{ rotate: `${i * 6}deg` }] },
-            ]}
-          >
-            {i % 5 !== 0 ? <View style={styles.minutesLine} /> : null}
-          </View>
-        ))}
-        {/* Hour markings */}
-        {Array.from({ length: 12 }).map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.hourMarking,
-              { transform: [{ rotate: `${index * 30}deg` }] },
-            ]}
-          >
-            <View style={{ transform: [{ rotate: `-${index * 30}deg` }] }} >
-              <Text style={{
-                fontWeight: '500',
-                fontSize: 16,
-                color: 'black'
-              }} >{index == 0 ? '12' : index}</Text>
+      <ImageBackground blurRadius={blurRadius} borderRadius={imageRadius} source={backgroundImage}>
+        <View style={[styles.clockFace, clockFaceStyle]}>
+
+          {Array.from({ length: 60 }).map((_, i) => (
+            <View
+              key={i}
+              style={[
+                styles.hourMarking,
+                { transform: [{ rotate: `${i * 6}deg` }] },
+              ]}
+            >
+              {i % 5 !== 0 && <View style={[styles.minutesLine, minutesLineStyle]} />}
             </View>
-          </View>
-        ))}
+          ))}
+          {/* Hour markings */}
+          {Array.from({ length: 12 }).map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.hourMarking,
+                { transform: [{ rotate: `${index * 30}deg` }] },
+                hourHandsContainerStyle
+              ]}
+            >
+              <View style={[{ transform: [{ rotate: `-${index * 30}deg` }] }]}>
+                {typeof hourMarkerComponent == 'function' ? hourMarkerComponent(index) : (
+                  <Text style={{
+                    fontWeight: 500,
+                    fontSize: 18,
+                    ...hourTextStyle
+                  }} >{index == 0 ? '12' : index}</Text>
+                )}
+              </View>
+            </View>
+          ))}
+          {/* Hour hand */}
+          <View
+            style={[
+              styles.hand,
+              styles.hourHand,
+              { transform: [{ rotate: `${hoursAngle}deg` }] },
+              hourHandStyle
+            ]}
+          />
 
-        {/* Hour hand */}
-        <View
-          style={[
-            styles.hand,
-            styles.hourHand,
-            { transform: [{ rotate: `${hoursAngle}deg` }] },
-            hourHandStyle
-          ]}
-        />
-
-        {/* Minute hand */}
-        <View
-          style={[
-            styles.hand,
-            styles.minuteHand,
-            { transform: [{ rotate: `${minutesAngle}deg` }] },
-            minuteHandStyle
-          ]}
-        />
-        {/* Second hand */}
-        <View
-          style={[
-            styles.hand,
-            styles.secondHand,
-            { transform: [{ rotate: `${secondsAngle}deg` }] },
-            secondsHandStyle
-          ]}
-        />
-        <View style={[styles.centerDot, centerDotStyle]} />
-      </View>
+          {/* Minute hand */}
+          <View
+            style={[
+              styles.hand,
+              styles.minuteHand,
+              { transform: [{ rotate: `${minutesAngle}deg` }] },
+              minuteHandStyle
+            ]}
+          />
+          {/* Second hand */}
+          <View
+            style={[
+              styles.hand,
+              styles.secondHand,
+              { transform: [{ rotate: `${secondsAngle}deg` }] },
+              secondsHandStyle
+            ]}
+          />
+          <View style={[styles.centerDot, centerDotStyle]} />
+          {showDate && (
+            <View style={[styles.dateStyle, {
+              top: clockFaceWidth * 0.07,
+              left: clockFaceWidth * 0.22,
+            }, dateStyle,]}>
+              <Text style={[{
+                fontSize: clockFaceWidth * 0.07,
+              }, dateTextStyle]}>{dayNames[time.getDay()]}, {time.getDate()}</Text>
+            </View>
+          )}
+        </View>
+      </ImageBackground>
     </View>
   );
 };
-
+AnalogClock.displayName = 'react-native-analog-watch-face';
 export default AnalogClock;
-

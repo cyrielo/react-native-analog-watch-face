@@ -8,6 +8,7 @@
     "strict": true,
     "declaration": true,
     "declarationMap": true,
+    "emitDeclarationOnly": false,
     "sourceMap": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
